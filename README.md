@@ -192,51 +192,94 @@ users (id, name, email, password_hash, is_active, created_at, updated_at)
 
 ---
 
-## 11. Quickstart with Docker Compose
+## 11. How to Run (Step-by-Step)
 
-1. Clone the repository and copy the environment template:
+### Option A: Running from Local Git Clone (Fastest)
+
+#### 1. Clone the Repository
+```bash
+git clone https://github.com/kreshwanth/documind-rag.git
+cd documind-rag
+```
+
+#### 2. Start the Backend Server (Terminal 1)
+```powershell
+# Navigate to backend folder
+cd backend
+
+# Create & activate Python virtual environment
+python -m venv venv
+
+# If on Windows PowerShell, enable script execution (one-time setup):
+Set-ExecutionPolicy -Scope CurrentUser -ExecutionPolicy RemoteSigned
+
+# Activate virtual environment
+# Windows PowerShell:
+.\venv\Scripts\Activate.ps1
+# macOS / Linux:
+source venv/bin/activate
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Start Backend API server
+uvicorn app.main:app --host 127.0.0.1 --port 8000 --reload
+```
+*Backend is now running at: `http://127.0.0.1:8000` (API Docs at `http://127.0.0.1:8000/docs`)*
+
+---
+
+#### 3. Start the Frontend Application (Terminal 2)
+Open a **new terminal window**:
+```powershell
+# Navigate to frontend folder (wrap path in quotes if using full path with spaces)
+cd documind-rag/frontend
+
+# Install dependencies
+npm install
+
+# Start Vite dev server
+npm run dev
+```
+*Frontend is now running at: `http://localhost:5173`*
+
+---
+
+#### 4. Open & Use the Application
+1. Open your browser and navigate to **`http://localhost:5173`**.
+2. Click **Create Enterprise Account** to register a new account or **Sign In**.
+3. Upload PDF documents in the **Documents** tab.
+4. Go to **Chat** and ask questions to get grounded AI answers with page citations!
+
+---
+
+### Option B: Running with Docker Compose (All-in-One)
+
+1. Clone the repository and configure environment variables:
    ```bash
    cp .env.example .env
    ```
-2. Set your `GEMINI_API_KEY` in `.env`.
-3. Start the entire application stack:
+2. Start the complete containerized stack (PostgreSQL + pgvector, Backend, Frontend):
    ```bash
    docker compose up --build -d
    ```
-4. Access the services:
-   - **Frontend UI**: [http://localhost:3000](http://localhost:3000)
+3. Access the services:
+   - **Frontend Web UI**: [http://localhost:3000](http://localhost:3000)
    - **Backend API Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
    - **Health Check**: [http://localhost:8000/health](http://localhost:8000/health)
 
 ---
 
-## 12. Local Development Setup
+## 12. Automated Test Suite
 
-### Backend
-```bash
-cd backend
-python -m venv venv
-# Windows:
-.\venv\Scripts\Activate.ps1
-# Linux/macOS:
-source venv/bin/activate
-
-pip install -r requirements.txt
-alembic upgrade head
-uvicorn app.main:app --reload --port 8000
-```
-
-### Frontend
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-### Running Test Suite
+Run the automated test benchmarks and evaluation suite:
 ```bash
 cd backend
 pytest
+```
+Or run the RAG accuracy benchmark suite directly:
+```bash
+python test_all_benchmarks.py
 ```
 
 ---
