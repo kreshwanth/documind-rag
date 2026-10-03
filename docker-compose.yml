@@ -1,0 +1,73 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: documind-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-documind_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-documind_secure_password}
+      POSTGRES_DB: ${POSTGRES_DB:-documind_db}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-documind_user} -d ${POSTGRES_DB:-documind_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - documind-net
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: documind-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-documind_user}:${POSTGRES_PASSWORD:-documind_secure_password}@postgres:5432/${POSTGRES_DB:-documind_db}
+      SECRET_KEY: ${SECRET_KEY:-documind_super_secret_jwt_key_change_in_production_987234982374}
+      ALGORITHM: ${ALGORITHM:-HS256}
+      ACCESS_TOKEN_EXPIRE_MINUTES: ${ACCESS_TOKEN_EXPIRE_MINUTES:-1440}
+      GEMINI_API_KEY: ${GEMINI_API_KEY}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-text-embedding-004}
+      GENERATIVE_MODEL: ${GENERATIVE_MODEL:-gemini-1.5-flash}
+      UPLOAD_DIR: /app/uploads
+      CHUNK_SIZE: ${CHUNK_SIZE:-600}
+      CHUNK_OVERLAP: ${CHUNK_OVERLAP:-100}
+      DEFAULT_TOP_K: ${DEFAULT_TOP_K:-4}
+      DEFAULT_SIMILARITY_THRESHOLD: ${DEFAULT_SIMILARITY_THRESHOLD:-0.40}
+      BACKEND_CORS_ORIGINS: '["http://localhost:5173","http://localhost:3000","http://127.0.0.1:5173","http://127.0.0.1:3000"]'
+    ports:
+      - "8000:8000"
+    volumes:
+      - documind_uploads:/app/uploads
+    networks:
+      - documind-net
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: documind-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
+    networks:
+      - documind-net
+
+volumes:
+  pgdata:
+  documind_uploads:
+
+networks:
+  documind-net:
+    driver: bridge
