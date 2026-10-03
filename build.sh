@@ -4,7 +4,9 @@ set -o errexit
 
 echo "--- Building DocuMind Frontend ---"
 cd frontend
-npm install
+rm -rf node_modules
+rm -f package-lock.json
+npm install --include=optional
 npm run build
 cd ..
 
