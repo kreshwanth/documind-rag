@@ -1,5 +1,11 @@
 # DocuMind: Enterprise Document Management & RAG Platform
 
+[![Live Demo](https://img.shields.io/badge/Live_Demo-documind--rag--1sat.onrender.com-blue?style=for-the-badge&logo=render)](https://documind-rag-1sat.onrender.com)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.111.0-009688?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com)
+[![React](https://img.shields.io/badge/React-18.3.1-61DAFB?style=for-the-badge&logo=react)](https://react.dev)
+[![pgvector](https://img.shields.io/badge/pgvector-PostgreSQL-336791?style=for-the-badge&logo=postgresql)](https://github.com/pgvector/pgvector)
+
+> 🚀 **Live Application Demo**: [**https://documind-rag-1sat.onrender.com**](https://documind-rag-1sat.onrender.com)  
 > Production-grade Retrieval-Augmented Generation (RAG) platform powered by **PostgreSQL + pgvector** and **Google Gemini AI**.
 
 ---
